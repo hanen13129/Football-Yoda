@@ -21,7 +21,9 @@ jobs:
 
       - name: Terraform validate
         run: terraform validate
-
+    env:
+      ROLE_TO_ASSUME: "${{ secrets.AWS_IAM_ROLE_ARN }}"
+      AWS_REGION: "${{ secrets.AWS_REGION }}"
   lint:
     runs-on: ubuntu-latest
     steps:
@@ -51,8 +53,8 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          role-to-assume: arn:aws:iam::381492080136:role/Github.to.aws.oicd
-          aws-region: "eu-central-1"
+          role-to-assume: ${{ env.ROLE_TO_ASSUME }}
+          aws-region: ${{ env.AWS_REGION }}
       
       - name: Checkout repo
         uses: actions/checkout@v3
