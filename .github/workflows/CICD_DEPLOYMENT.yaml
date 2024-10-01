@@ -4,57 +4,18 @@ on:
     branches:
      - main
 jobs:
-  format-and-validate:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Get Code
-        uses: actions/checkout@v3
-
-      - name: Terraform setup
-        uses: hashicorp/setup-terraform@v1
-
-      - name: Terraform Init
-        run: terraform init -backend=false
-
-      - name: Terraform Format
-        run: terraform fmt -check
-
-      - name: Terraform validate
-        run: terraform validate
-    env:
-      ROLE_TO_ASSUME: "${{ secrets.AWS_IAM_ROLE_ARN }}"
-      AWS_REGION: "${{ secrets.AWS_REGION }}"
-  lint:
+  terraform:
     runs-on: ubuntu-latest
     steps:
       - name: Get code
         uses: actions/checkout@v3
-
-      - name: TFLint setup
-        uses: terraform-linters/setup-tflint@v3
-      
-      - name: Install terraform plugins
-        run: tflint --init
-      
-      - name: Lint Terraform files
-        run: tflint
-
-  
-  checkov:
-    name: Checkov
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout PR branch
-        uses: actions/checkout@v3
-
-  terraform:
-    runs-on: ubuntu-latest
-    steps:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          role-to-assume: ${{ env.ROLE_TO_ASSUME }}
-          aws-region: ${{ env.AWS_REGION }}
+          aws-access-key-id: ${{ secrets.AWS_DEPLOY_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_DEPLOY_SECRET }}
+          role-to-assume: ${{ secrets.AWS_IAM_ROLE_ARN}}
+          aws-region: ${{ secrets.AWS_REGION }}
       
       - name: Checkout repo
         uses: actions/checkout@v3
@@ -70,3 +31,40 @@ jobs:
       
       - name: Terraform Apply
         run: terraform apply --auto-approve
+  format-and-validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get Code
+        uses: actions/checkout@v3        
+      - name: Terraform setup
+        uses: hashicorp/setup-terraform@v1
+
+      - name: Terraform Init
+        run: terraform init -backend=false
+
+      - name: Terraform Format
+        run: terraform fmt -check
+
+      - name: Terraform validate
+        run: terraform validate
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get code
+        uses: actions/checkout@v3
+
+      - name: TFLint setup
+        uses: terraform-linters/setup-tflint@v3
+      
+      - name: Install terraform plugins
+        run: tflint --init
+      
+      - name: Lint Terraform files
+        run: tflint
+  
+  checkov:
+    name: Checkov
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout PR branch
+        uses: actions/checkout@v3
