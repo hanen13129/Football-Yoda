@@ -9,6 +9,7 @@ jobs:
     steps:
       - name: Get code
         uses: actions/checkout@v3
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -16,9 +17,6 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_DEPLOY_SECRET }}
           #role-to-assume: ${{ secrets.AWS_IAM_ROLE_ARN}}
           aws-region: ${{ secrets.AWS_REGION }}
-      
-      - name: Checkout repo
-        uses: actions/checkout@v3
       
       - name: Install Terraform
         uses: hashicorp/setup-terraform@v2
