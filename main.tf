@@ -37,7 +37,7 @@ resource "aws_vpc" "main_vpc" {
 
 resource "random_pet" "petname" { #creatte a random name 
   length    = 5
-  separator = "_"
+  separator = "-"
 }
 resource "aws_s3_bucket" "example" {
   bucket = random_pet.petname.id
